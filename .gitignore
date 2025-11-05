@@ -1,0 +1,8 @@
+.env
+venv/
+*.txt
+__pycache__/
+*.pyc
+*.zip
+*.cast
+.idea/
