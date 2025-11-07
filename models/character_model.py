@@ -14,7 +14,7 @@ class Character:
         self.score = 0
         self.inventory = {}
 
-def show_status(self):
+    def show_status(self):
         print(f"=== STATUS KARAKTER ===")
         print(f"Class   : {self.class_name}")
         print(f"HP      : {self.hp}")
