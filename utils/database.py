@@ -32,34 +32,22 @@ cursor = db.cursor()
 #     )
 # ''')
 
-# # 2. Tabel karakter dalam game
+# 2. Tabel karakter dalam game
 # cursor.execute('''
 #     CREATE TABLE IF NOT EXISTS characters (
-#         id INTEGER PRIMARY KEY AUTOINCREMENT,
-#         user_id INTEGER NOT NULL UNIQUE,
-#         role TEXT NOT NULL,
-#         hp INTEGER NOT NULL,
-#         max_hp INTEGER NOT NULL,
-#         energi INTEGER NOT NULL,
-#         max_energi INTEGER NOT NULL,
-#         deff INTEGER NOT NULL,
-#         damage INTEGER NOT NULL,
-#         gold INTEGER DEFAULT 10,
-#         exp INTEGER DEFAULT 0,
-#         score INTEGER DEFAULT 0,
-#         title TEXT DEFAULT 'Newbie',
-#         current_floor INTEGER DEFAULT 1,
-#         FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
-#     )
-# ''')
-
-# # 3. Tabel item untuk karakter
-# cursor.execute('''
-#     CREATE TABLE IF NOT EXISTS inventory (
-#         id INTEGER PRIMARY KEY AUTOINCREMENT,
-#         character_id INTEGER NOT NULL,
-#         item_name TEXT NOT NULL,
-#         quantity INTEGER NOT NULL,
-#         FOREIGN KEY (character_id) REFERENCES characters (id) ON DELETE CASCADE
-#     )
+#     id INT AUTO_INCREMENT PRIMARY KEY,
+#     user_id INT NOT NULL,
+#     class_name VARCHAR(30) NOT NULL,
+#     hp INT DEFAULT 0,
+#     energy INT DEFAULT 0,
+#     defense INT DEFAULT 0,
+#     damage INT DEFAULT 0,
+#     gold INT DEFAULT 0,
+#     exp INT DEFAULT 0,
+#     floor INT DEFAULT 1,
+#     title VARCHAR(50) DEFAULT 'Novice',
+#     score INT DEFAULT 0,
+#     inventory TEXT DEFAULT '{}',
+#     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+# )
 # ''')
