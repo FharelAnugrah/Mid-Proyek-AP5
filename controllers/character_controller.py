@@ -1,5 +1,4 @@
 # controller_character.py
-from utils.database import db, cursor
 from models.character_model import Character
 from utils.database import db, cursor
 
@@ -31,10 +30,9 @@ class Fighter(Character):
     def __init__(self, user_id: int):
         super().__init__(user_id, "Fighter", hp=250, energy=130, defense=150, damage=80)
 
-    
+
 def create_character(user_id: int):
     print("\n=== PEMBUATAN KARAKTER BARU ===")
-    print("Pilih class karakter:")
     print("1. Archmage  - Penyihir kuat dengan energi besar")
     print("2. Guardian  - Pelindung tangguh dengan pertahanan tinggi")
     print("3. Marksman  - Pemanah cepat dengan serangan tajam")
@@ -43,33 +41,66 @@ def create_character(user_id: int):
 
     choice = input("Masukkan pilihan (1-5): ").strip()
 
-    # Pemilihan class berdasarkan input
-    if choice == "1":
-        char = Archmage(user_id)
-    elif choice == "2":
-        char = Guardian(user_id)
-    elif choice == "3":
-        char = Marksman(user_id)
-    elif choice == "4":
-        char = Assassin(user_id)
-    elif choice == "5":
-        char = Fighter(user_id)
-    else:
+    class_map = {
+        "1": Archmage,
+        "2": Guardian,
+        "3": Marksman,
+        "4": Assassin,
+        "5": Fighter
+    }
+
+    if choice not in class_map:
         print("Pilihan tidak valid! Silakan coba lagi.\n")
         return create_character(user_id)
 
-    # Simpan karakter ke database
-    cursor.execute("""
-        INSERT INTO characters (user_id, class_name, hp, energy, defense, damage, gold, exp, floor, title, score, inventory)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, (
-        char.user_id, char.class_name, char.hp, char.energy, char.defense, char.damage,
-        char.gold, char.exp, char.floor, char.title, char.score, "{}"
-    ))
-    db.commit()
+    char = class_map[choice](user_id)
 
-    print(f"\nKarakter '{char.class_name}' berhasil dibuat untuk User ID {user_id}!")
-    print("Detail karakter:")
-    char.show_status()
+    try:
+        # Pastikan user belum punya karakter sebelumnya
+        cursor.execute("SELECT id FROM characters WHERE user_id = %s", (user_id,))
+        existing_char = cursor.fetchone()
+        if existing_char:
+            print("\n❌ User ini sudah memiliki karakter! Tidak bisa membuat lagi.")
+            return None
+
+        # Simpan karakter baru
+        cursor.execute("""
+            INSERT INTO characters 
+            (user_id, class_name, hp, energy, defense, damage, gold, exp, floor, title, score)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (
+            char.user_id,
+            char.class_name,
+            char.hp,
+            char.energy,
+            char.defense,
+            char.damage,
+            char.gold,
+            char.exp,
+            char.floor,
+            char.title,
+            char.score
+        ))
+        db.commit()
+
+        # Ambil ID karakter yang baru dibuat
+        cursor.execute("SELECT LAST_INSERT_ID()")
+        char_id = cursor.fetchone()[0]
+
+        # Tambahkan item awal ke inventory
+        starter_items = [("Small Potion", 3), ("Wooden Sword", 1)]
+        cursor.executemany("""
+            INSERT INTO inventory_items (character_id, item_name, quantity)
+            VALUES (%s, %s, %s)
+        """, [(char_id, name, qty) for name, qty in starter_items])
+        db.commit()
+
+        print(f"\n✅ Karakter '{char.class_name}' berhasil dibuat untuk User ID {user_id}!")
+        print("🎒 Item awal: Small Potion x3, Wooden Sword x1")
+        char.show_status()
+
+    except Exception as e:
+        db.rollback()
+        print("⚠️ Terjadi kesalahan saat menyimpan karakter:", e)
+
     return char
-
