@@ -1,18 +1,22 @@
 # View for leaderboard
-def display_leaderboard(leaderboard_data, player_rank_info=None):
+def display_leaderboard(leaderboard_data):
     """
-    Menampilkan leaderboard ke layar
+    Menampilkan tabel leaderboard top players
+    
     Args:
-        leaderboard_data (list): Data leaderboard dari controller
-        player_rank_info (dict, optional): Info ranking pemain saat ini
+        leaderboard_data (list): List of dict berisi data pemain
+        
+    Returns:
+        None
     """
     print("\n" + "="*70)
     print("🏆 LEADERBOARD - TOP PLAYERS 🏆".center(70))
     print("="*70)
     
-    if not leaderboard_data:
+    if not leaderboard_data or not isinstance(leaderboard_data, list):
         print("Belum ada data pemain di leaderboard.")
         print("="*70)
+        input("\nTekan Enter untuk kembali...")
         return
     
     # Header tabel
@@ -21,8 +25,18 @@ def display_leaderboard(leaderboard_data, player_rank_info=None):
     
     # Data pemain
     for idx, player in enumerate(leaderboard_data, start=1):
+        # Validasi setiap player
+        if not isinstance(player, dict):
+            continue
+        
+        # Ambil data dengan fallback value
+        username = player.get('username', 'Unknown')[:15]  # Max 15 char
+        class_name = player.get('class_name', 'N/A')[:12]  # Max 12 char
+        floor = player.get('floor', 0)
+        score = player.get('score', 0)
+        title = player.get('title', 'N/A')[:15]  # Max 15 char
+        
         # Medal untuk top 3
-        medal = ""
         if idx == 1:
             medal = "🥇"
         elif idx == 2:
@@ -32,9 +46,9 @@ def display_leaderboard(leaderboard_data, player_rank_info=None):
         else:
             medal = f"{idx}."
         
-        print(f"{medal:<6} {player['username']:<15} {player['class_name']:<12} "
-              f"{player['floor']:<7} {player['score']:<10} {player['title']:<15}")
+        # Print data
+        print(f"{medal:<6} {username:<15} {class_name:<12} "
+              f"{floor:<7} {score:<10} {title:<15}")
     
     print("="*70)
-    
     input("\nTekan Enter untuk kembali...")
