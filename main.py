@@ -9,6 +9,7 @@ while True:
     print("3. Keluar")
     pilihan = input("Pilih menu: ")
     
+<<<<<<< HEAD
     try:
         if pilihan == "1":
             username, password = register_menu()
@@ -24,3 +25,16 @@ while True:
         print("Terjadi error:", e)
         
 close_connection()
+=======
+    if pilihan == "1":
+        username, password = register_menu()
+        register_user(username, password)
+    elif pilihan == "2":
+        username, password = login_menu()
+        login_user(username, password)
+    elif pilihan == "3":
+        break
+    else:
+        print("Pilihan tidak valid.")
+        
+>>>>>>> b95b6065a90f33c6870a93f7d7f5f052c2297180
